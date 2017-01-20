@@ -98,7 +98,7 @@
 
 \section*{\color{DarkOrange}Introduction}
 
-\subsection*{Challenges of Big Data processing}
+\subsection*{Challenges of Big Data processing}\label{sec: challenges}
 
 \subsection*{Real-time processing for data streams}
  
@@ -318,12 +318,83 @@ An architectural view of YARN is shown in Fig.~\ref{fig:YARN}.
 
 \section*{\color{DarkOrange} Real-time Data Processing}
 
+As we introduced in the Introduction Section, the characteristics of Big Data contains 4 Vs, among which Volume, Variety and Velocity are the most important. The relations among these 3 Vs are shown in Fig.~\ref{fig:3v}.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.4\textwidth]{images/3v.png}
+    \caption{The 3 Vs of Big Data}
+    \label{fig:3v}   
+\end{figure}
+
+The need of velocity requires to process the data fast, so that the system can react to the changing conditions in  real time. This requirement of processing high-volume data streams with low-latency becomes increasingly important in the areas of trading, fraud detection, network monitoring, and many other aspects, thus increasing the demand for stream processing. Under this requirement, the capacity of processing big volumes of data is not enough, we also need to react as fast as possible to the update of data.
+
+Stream processing is a programming paradigm, which is also called dataflow programming or reactive programming. A stream is a sequence of data and a series of operations will be applied to each element in the stream. Data items in streams are volatile, they are discarded after some time. Since stream processing often involves large amount of data, and requires the results in real-time, the stream processing platforms (e.g. Apache Storm) often work in parallel. Besides, this paradigm is a good complement of parallel processing, and allows applications to more easily exploit a limited form of parallel processing.  
+
+Traditional popular big data processing frameworks like Hadoop and Spark assume that they are processing data from a data storage that all data is available when it is needed. And it may require several passes over a static, archived data. But when data arrives in a stream or streams, data will be lost if it is not processed immediately. Moreover, in the streaming scenarios, usually the data arrives so rapidly that it is not feasible to store it all in a conventional database, to process be processed when needed. So stream processing algorithms often rely on concise, approximate synopses of the input streams which can be computed with a simple pass over the streaming data.
+
+In the coming sections of this part, we will first introduce the rules for processing Data Streams, then we will present several Data Stream management systems, and a detailed introduction about Apache Storm can be found in the end.
+
+%Below, we will first present the issues in data stream processing, then introduce an approach to summarize a stream with only looking at fixed-length windows, and in the end we will present some Stream management systems.
+
+\subsubsection*{Rules in Data Stream processing}
 
 
+A \textbf{data stream} is a real-time, continuous, ordered (explicitly by timestamp or implicitly by arrival time) sequence of items.
 
-\subsection*{Rules for Data Stream processing}
+
+%The most notable characteristic of a data stream is that it often delivers elements very rapidly. So we must process the data in real time, or we lose the opportunity to process it forever. So it is very important to execute the algorithm in memory with no or rare accesses to secondary storage.
+
+In general, we need to follow some rules for processing low-latency and high-volume data streams. The most important rules are:
+
+\begin{itemize}
+
+\item \textbf{Rule 1: Keep the data moving} \\
+The first requirement for a real-time high-volume data stream processing framework is to process data ``on the fly", without storing everything. 
+
+\item \textbf{Rule 2: Handle Stream Imperfections}\\
+The second requirement is to provide resilience results against ``imperfections" in streams, including delay, missing and out-of-order of data.
+
+\item \textbf{Rule 3: Generate Predictable Outcomes}\\
+A stream processing engine must guarantee predictable and repeatable outcomes. 
+
+\item \textbf{Rule 4: Integrate Stored and Streaming Data }\\
+A stream processing system also needs to efficiently store, access, and modify state information, and combine it with new coming streaming data. 
+
+\item \textbf{Rule 5: Guarantee Data Safety and Availability}\\
+Fault-tolerance is another important point for such a system.
+
+\item \textbf{Rule 6:  Partition and Scale Applications Automatically}\\
+In order to meet the real-time requirement for high-volume and fast-changing data streams, the capability to distribute processings across multiple machines to achieve incremental scalability is also important. Ideally, the system should automatically and continuously distribute the data and queries.
+
+\item \textbf{Rule 7: Process and Respond Instantaneously}\\
+The last but most important requirement is to have a highly-optimized, minimal-overhead execution engine to deliver real-time response for high-volume applications.
+\end{itemize}
+
+When designing a stream processing algorithm, we need to keep two things in mind:
+
+\begin{itemize}
+
+\item It can be more efficient to get an approximate answer than an exact solution.
+
+\item A variety of techniques related to hashing turn out to be very useful. Because, these techniques introduce useful randomness, which produces an approximate answer that is very close to the exact one.
+
+\end{itemize}
+
+The approximation of a streaming algorithm comes from two aspects: (1) from limiting the size of states maintained for the process; (2) from reducing the precision of the result. 
+
+The algorithms for processing streams usually involve summarization of the stream in some ways. Summary data structures such as : wavelets, sketches, histograms and samples have been widely used especially  for streaming aggregation. These algorithms always begin by considering how to make a useful sample or how to filter tout most of the undesirable elements. Another important approach to summarize a stream is to process within a fixed-length window, then query the window as if it were a relation in a database. This model is called ``Sliding Window Model" \cite{SlidingWindow}.
+
+%The parallel and distributed streaming algorithm should also be both time and space efficient in order to manage high-speed data streams, and also communication efficient to deal with physical data distribution.
+
+A lot of prior work on stream processing focused on developing space-efficient, one-pass algorithms for performing a wide range of centralized, one-shot computations over massive streams. These applications involve: (1) computing quantiles; (2) estimating distinct values; (3) counting frequent elements; (4) estimating join sizes and stream norms.
+
+As the size of data is getting larger, some recent efforts have concentrated on distributed stream processing and proposing communication efficient streaming frameworks to handle a number of query tasks such as aggregation, quantiles and join (such as Apache Storm, Spark Streaming, Yahoo! S4 etc.) which will be introduced in the next Section.  
+
 
 \subsection*{Data Stream management systems}
+
+
 
 \subsection*{Introduction to Apache Storm}
 
