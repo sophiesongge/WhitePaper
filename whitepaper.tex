@@ -383,7 +383,7 @@ When designing a stream processing algorithm, we need to keep two things in mind
 
 The approximation of a streaming algorithm comes from two aspects: (1) from limiting the size of states maintained for the process; (2) from reducing the precision of the result. 
 
-The algorithms for processing streams usually involve summarization of the stream in some ways. Summary data structures such as : wavelets, sketches, histograms and samples have been widely used especially  for streaming aggregation. These algorithms always begin by considering how to make a useful sample or how to filter tout most of the undesirable elements. Another important approach to summarize a stream is to process within a fixed-length window, then query the window as if it were a relation in a database. This model is called ``Sliding Window Model" \cite{SlidingWindow}.
+The algorithms for processing streams usually involve summarization of the stream in some ways. Summary data structures such as : wavelets, sketches, histograms and samples have been widely used especially  for streaming aggregation. These algorithms always begin by considering how to make a useful sample or how to filter out most of the undesirable elements. Another important approach to summarize a stream is to process within a fixed-length window, then query the window as if it were a relation in a database. This model is called ``Sliding Window Model" \cite{SlidingWindow}.
 
 %The parallel and distributed streaming algorithm should also be both time and space efficient in order to manage high-speed data streams, and also communication efficient to deal with physical data distribution.
 
@@ -394,9 +394,85 @@ As the size of data is getting larger, some recent efforts have concentrated on 
 
 \subsection*{Data Stream management systems}
 
+ \begin{table*}[]
+\centering
+\caption{A comparison of Storm, Spark Streaming and Yahoo! S4}
+\label{tab:compare}
+\begin{tabular}{@{}|c|c|c|c|@{}}
+\toprule
+                                                                                            & \textbf{Storm}    & \textbf{\begin{tabular}[c]{@{}c@{}}Spark\\ Streaming\end{tabular}} & \textbf{S4}      \\ \midrule
+\textbf{Original Design}                                                                    & Twitter           & UC Berkeley                                                        & Yahoo!           \\ \midrule
+\textbf{Implemented In}                                                                     & Clojure           & Scala                                                              & Java             \\ \midrule
+\textbf{APIs}                                                                               & Java (and others) & Scala, Java                                                        & Java             \\ \midrule
+\textbf{Processing Model}                                                                   & Record at a time  & Mini Batches                                                       & Record at a time \\ \midrule
+\textbf{Latency}                                                                            & Sub-Second        & Few Seconds                                                        & Sub-Second       \\ \midrule
+\textbf{Data Units}                                                                         & Tuple             & Java Object                                                        & Java Object      \\ \midrule
+\textbf{Hadoop Distribution}                                                                & Hortonworks HDP   & Cloudera, MapR                                                     & None             \\ \midrule
+\textbf{Resource Manager}                                                                   & Mesos/Zookeeper   & YARN/Mesos                                                         & Zookeeper        \\ \midrule
+\textbf{Distributing Work}                                                                  & User Specifies    & MapReduce                                                          & Evenly           \\ \midrule
+\textbf{\begin{tabular}[c]{@{}c@{}}Fault Tolerance\\ (Ever Record Processed:)\end{tabular}} & At Least Once     & Exactly Once                                                       & No Guarentee     \\ \midrule
+\textbf{Dynamic Deployment}                                                                 & Yes               & No                                                                 & No               \\ \bottomrule
+\end{tabular}
+\end{table*}
+
+There are many efforts towards build a Data Stream processing system. 
+Some works have extended the MapReduce paradigm to process dynamic data. But these frameworks are not suitable for processing data streams and returning the results in real-time because of the nature of MapReduce paradigm.
+
+To address the limitation, some stream processing engines have been proposed, some of them are centralized which are not able to process a huge volume of data streams. Others are parallel. 
+Among all the parallel frameworks, \textbf{Spark Streaming}, \textbf{Yahoo! S4} and \textbf{Twitter Storm} are the most widely used. % parallel and distributed stream  processing framework. 
+We will introduce them separately.
+
+ 
+ \textbf{Spark Streaming} is an extension of the Spark framework. It enables scalable, high-throughput and fault-tolerant stream processing for dynamic data streams. Spark Streaming receives input data streams and divides them into batches, which will later be processed by the Spark engine to generate final stream in batches. It has APIs for Scala, Java and Python. Spark Streaming is a data parallelism framework. It follows the same ideas as MapReduce batch processing paradigm. It is not a real ``real-time processing" framework: the incoming events are cached and processed as a batch, resulting in a larger delay than the real streaming processing frameworks such as Twitter Storm.
+
+\textbf{Yahoo! S4}  is a general-purpose, distributed, scalable, partially faut-tolerant, pluggable platform for data stream processing that allows users to easily develop applications for processing continuous unbounded streams of data. It is a java based solution which relies on the user defined classes to process and produce stream data. It uses Apache Zookeeper \cite{DBLP:conf/usenix/HuntKJR10} to maintain the state of a distributed job. It allows a parallel execution of data streams. But it does not provide a dynamic load balancing protocol, which is left for users to define. S4 uses "Plain Old Java Objects" (POJO) mode as its communication protocol and User Datagram Protocol (UDP) as its underlying protocol, which has an impact on reliability. Besides, it does not support dynamic deployment of the cluster or add or delete nodes during run time.
+
+ \textbf{Twitter Storm} \cite{Toshniwal:2014:STO:2588555.2595641}, is a distributed, parallel and fault tolerance framework for data streams processing. Queries can be expressed in using the boxes and arrows model. A Storm job, which is called a Topology, consists in two components: Spout and Bolt . Spout nodes are responsible for generating the system input streams. Bolt nodes are in charge of processing those streams and generate output results. It relies on Zookeeper servers to maintain the state of distributed setups. Storm supports task parallelism. In a Storm cluster, the data is flowing while the tasks do not. Storm is a real "flow processing" framework: every incoming data will be handled as an event, which has a smaller delay than the mini-batch processing frameworks such as Spark Streaming. It also supports dynamic deployment of the cluster, and add or delete nodes during run time.
+ 
+ Table.~\ref{tab:compare} shows a comparison of these three frameworks.
+
+Through the above comparison, we think Storm is the best choice for a real-time and low latency data stream processing problem. The reasons are:
+
+\begin{itemize}
+
+\item Storm processes data in form of streams. And it processes intensive queries in parallel. (Latency)
+
+\item It is scalable. As the amount of data increases, we can simply increase the number of nodes for processing. (Dynamic Deployment) 
+
+\item It has a good reliability, which can ensure that each event can be at least processed once. (Fault Tolerance)
+
+\item It provides good fault tolerance. Once a node fails, the task on this node is re-assigned to the other nodes. (Fault Tolerance)
+
+\item It provides a simple programming model, which reduces the complexity of real-time processing. (Distributing Work)
+
+\item It supports multiple programming languages such as Clojure, Java, Ruby and Python. (APIs)
+
+\end{itemize}
+
+We will give a detailed introduction about Apache Storm in the coming section.
 
 
 \subsection*{Introduction to Apache Storm}
+
+Storm is a distributed, reliable, fault-tolerant framework for data streams processing. It was firstly developed in Twitter, and is now an Apache open source project.
+
+A Storm job is called a \textbf{Topology}. A Topology is made of different types of components. Each component is responsible for a simple specific task. The component for handling and distributing the input streams is called a \textbf{Spout}. The component for processing the streams is called a \textbf{Bolt}. A Spout passes data to Bolt(s), which transforms it in some ways. A Bolt is a user defined task, it can either persist the data into different sort of storages, or pass it to some other Bolts, or process it through some user specified functions. A Storm cluster can be seen as a chain of a Spout followed by several Bolts, where each Bolt makes some kind of transformation on the data. An example of a Topology is shown in Fig.~\ref{fig:topology}.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.8\textwidth]{topology.png}
+    \caption{An example of a Topology}
+    \label{fig:topology}   
+\end{figure}
+
+A Storm cluster works in a master slave manner. A daemon called Nimbus runs on the Master node. It is responsible for distributing the user specified code to the cluster: assigning tasks to worker nodes, and monitoring the cluster for failures. A daemon called Supervisor runs on the Worker nodes. It executes the task on this node and is part of the Topology. Usually, a Topology runs across many worker nodes. Storm keeps the states of the cluster in Zookeeper or on local disk. So the daemons are stateless. They can fail or restart without affecting the health of the whole system. The physical view of a Storm cluster is shown in Fig.~\ref{fig:stormcluster}
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.5\textwidth]{stormcluster.png}
+    \caption{A physical view of a Storm cluster}
+    \label{fig:stormcluster}   
+\end{figure}
 
 \section*{\color{DarkOrange} ProActive}
 
