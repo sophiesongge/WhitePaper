@@ -97,6 +97,24 @@
 
 
 \section*{\color{DarkOrange}Introduction}
+Nowadays, we are awash in a flood of data. With a rapid growth of applications like social network analysis, semantic web analysis, bio-information analysis, AI, IoT analysis, a large amount of data needs to be processed to improve accuracy and create a meaning. For example: Google deals with more than 24 PB of data every day (a thousand times the volume of all the publications contained by the US National Library); Facebook updates more than 10 million photos and 3 billion "likes" per day; YouTube accommodates up to 800 million visitors monthly (a video more than an hour uploaded every second); and Twitter is almost doubling its size every year, etc.
+
+In this environment flooded with data, or as it is called Big Data, the systems have four features:
+
+\begin{itemize}
+
+\item Volume: The amount of data is very large, usually in an order (such as TB and PB) that can not be stored and processed by a single machine. Therefore, big data processing and cloud computing technologies are closely linked.
+
+\item Variety: The data types are variety. There are low-dimensional data (such as geographic coordinates), and also high-dimensional data (such as audio, video, pictures, etc.) as well. The formats of data could also be different. So when processing big data, the model needs to adapt to different kinds of data, or transform them into a unified format.
+
+\item Value: Information is everywhere, but the density of data value is relatively low. So before embarking on a high-density computing, a pre-processing step needs to firstly be used to clean and extract information from the original data.
+
+\item Velocity: The timeliness is high, so the processing speed should also be high. Generally, recent data is more valuable, so old data should be withdrawn when new data arrives. At the same time, the system needs to respond in a real-time or quasi real-time manner. 
+
+\end{itemize}
+
+Consequently Big Data processing represents diverse challenges at different time of the data journey. The data will go through a first set of analysis primarily focusing on real time information, a second set of application will then store, clean and sort the data. Finally, advanced algorithms will extract deeper and more valuable analysis. To organize all of these analysis and optimize parallelization, an orchestrator or meta-scheduler is required.
+
 
 \subsection*{Challenges of Big Data processing}\label{sec: challenges}
 
@@ -314,11 +332,13 @@ An architectural view of YARN is shown in Fig.~\ref{fig:YARN}.
 \subsection*{Parallel data warehouse}
 
 \subsection*{ETL for Big Data}
-
+As a reminder, ETL objective is to ease the process of moving and transforming data. It is split into three functions: data extraction from one or multiple sources, data transformation (cleaning, sorting, standardizing, aggregating, etc.), data loading in targeted systems following the right format. These process are used regularly so that the targeted systems are up to date and analysis can be performed. However, with the growth of data produced by businesses, data latency, the mix of data movement and transformation, these systems become companies’ bottleneck.
+As a close comparison, tools such as Hadoop focus on real time processing and making data available to users as soon as possible. The data never leaves Hadoop and this real time objective has been included in the development from the beginning. However, with Hadoop, the management of the entire process can become difficult since it relies on heavy interactions with the whole IT infrastructure. Workload automation becomes required to meet business expectations.
+However, ETL makes sense in the Big Data world to pre-compute data and enable end-users to easily perform analysis. For instance, in the NoSQL world, the same event can be stored in multiple places due to different level of granularity and different information required. ETL will then be in charge of creating additional views for end users (people or software).
 
 \section*{\color{DarkOrange} Real-time Data Processing}
 
-As we introduced in the Introduction Section, the characteristics of Big Data contains 4 Vs, among which Volume, Variety and Velocity are the most important. The relations among these 3 Vs are shown in Fig.~\ref{fig:3v}.
+\initial{A}s we introduced in the Introduction Section, the characteristics of Big Data contains 4 Vs, among which Volume, Variety and Velocity are the most important. The relations among these 3 Vs are shown in Fig.~\ref{fig:3v}.
 
 \begin{figure}
   \centering
@@ -415,7 +435,7 @@ As the size of data is getting larger, some recent efforts have concentrated on 
 \end{tabular}
 \end{table*}
 
-There are many efforts towards build a Data Stream processing system. 
+There are many efforts towards building a Data Stream processing system. 
 Some works have extended the MapReduce paradigm to process dynamic data. But these frameworks are not suitable for processing data streams and returning the results in real-time because of the nature of MapReduce paradigm.
 
 To address the limitation, some stream processing engines have been proposed, some of them are centralized which are not able to process a huge volume of data streams. Others are parallel. 
@@ -425,7 +445,7 @@ We will introduce them separately.
  
  \textbf{Spark Streaming} is an extension of the Spark framework. It enables scalable, high-throughput and fault-tolerant stream processing for dynamic data streams. Spark Streaming receives input data streams and divides them into batches, which will later be processed by the Spark engine to generate final stream in batches. It has APIs for Scala, Java and Python. Spark Streaming is a data parallelism framework. It follows the same ideas as MapReduce batch processing paradigm. It is not a real ``real-time processing" framework: the incoming events are cached and processed as a batch, resulting in a larger delay than the real streaming processing frameworks such as Twitter Storm.
 
-\textbf{Yahoo! S4}  is a general-purpose, distributed, scalable, partially faut-tolerant, pluggable platform for data stream processing that allows users to easily develop applications for processing continuous unbounded streams of data. It is a java based solution which relies on the user defined classes to process and produce stream data. It uses Apache Zookeeper \cite{DBLP:conf/usenix/HuntKJR10} to maintain the state of a distributed job. It allows a parallel execution of data streams. But it does not provide a dynamic load balancing protocol, which is left for users to define. S4 uses "Plain Old Java Objects" (POJO) mode as its communication protocol and User Datagram Protocol (UDP) as its underlying protocol, which has an impact on reliability. Besides, it does not support dynamic deployment of the cluster or add or delete nodes during run time.
+\textbf{Yahoo! S4}  is a general-purpose, distributed, scalable, partially faut-tolerant, pluggable platform for data stream processing that allows users to easily develop applications for processing continuous unbounded streams of data. It is a java based solution which relies on the user defined classes to process and produce stream data. It uses Apache Zookeeper \cite{Zookeeper} to maintain the state of a distributed job. It allows a parallel execution of data streams. But it does not provide a dynamic load balancing protocol, which is left for users to define. S4 uses "Plain Old Java Objects" (POJO) mode as its communication protocol and User Datagram Protocol (UDP) as its underlying protocol, which has an impact on reliability. Besides, it does not support dynamic deployment of the cluster or add or delete nodes during run time.
 
  \textbf{Twitter Storm} \cite{Toshniwal:2014:STO:2588555.2595641}, is a distributed, parallel and fault tolerance framework for data streams processing. Queries can be expressed in using the boxes and arrows model. A Storm job, which is called a Topology, consists in two components: Spout and Bolt . Spout nodes are responsible for generating the system input streams. Bolt nodes are in charge of processing those streams and generate output results. It relies on Zookeeper servers to maintain the state of distributed setups. Storm supports task parallelism. In a Storm cluster, the data is flowing while the tasks do not. Storm is a real "flow processing" framework: every incoming data will be handled as an event, which has a smaller delay than the mini-batch processing frameworks such as Spark Streaming. It also supports dynamic deployment of the cluster, and add or delete nodes during run time.
  
@@ -451,6 +471,13 @@ Through the above comparison, we think Storm is the best choice for a real-time 
 
 We will give a detailed introduction about Apache Storm in the coming section.
 
+\begin{figure}
+  \centering
+    \includegraphics[width=0.4\textwidth]{images/topology.png}
+    \caption{An example of a Topology}
+    \label{fig:topology}   
+\end{figure}
+
 
 \subsection*{Introduction to Apache Storm}
 
@@ -458,27 +485,34 @@ Storm is a distributed, reliable, fault-tolerant framework for data streams proc
 
 A Storm job is called a \textbf{Topology}. A Topology is made of different types of components. Each component is responsible for a simple specific task. The component for handling and distributing the input streams is called a \textbf{Spout}. The component for processing the streams is called a \textbf{Bolt}. A Spout passes data to Bolt(s), which transforms it in some ways. A Bolt is a user defined task, it can either persist the data into different sort of storages, or pass it to some other Bolts, or process it through some user specified functions. A Storm cluster can be seen as a chain of a Spout followed by several Bolts, where each Bolt makes some kind of transformation on the data. An example of a Topology is shown in Fig.~\ref{fig:topology}.
 
-\begin{figure}
-  \centering
-    \includegraphics[width=0.8\textwidth]{topology.png}
-    \caption{An example of a Topology}
-    \label{fig:topology}   
-\end{figure}
+
 
 A Storm cluster works in a master slave manner. A daemon called Nimbus runs on the Master node. It is responsible for distributing the user specified code to the cluster: assigning tasks to worker nodes, and monitoring the cluster for failures. A daemon called Supervisor runs on the Worker nodes. It executes the task on this node and is part of the Topology. Usually, a Topology runs across many worker nodes. Storm keeps the states of the cluster in Zookeeper or on local disk. So the daemons are stateless. They can fail or restart without affecting the health of the whole system. The physical view of a Storm cluster is shown in Fig.~\ref{fig:stormcluster}
 
 \begin{figure}
   \centering
-    \includegraphics[width=0.5\textwidth]{stormcluster.png}
+    \includegraphics[width=0.4\textwidth]{images/stormcluster.png}
     \caption{A physical view of a Storm cluster}
     \label{fig:stormcluster}   
 \end{figure}
 
 \section*{\color{DarkOrange} ProActive}
 
+\initial{P}roActive Parallel Suite is an open-source software for enterprise workload orchestration. A workflow model allows to define the set of executables and scripts written in any scripting language along with their dependencies, so ProActive Parallel Suite can schedule and orchestrate executions while optimising the use of computational resources.
+
+
 \subsection*{Introduction to ProActive}
 
+Activeeon \cite{Activeeon} offers IT automation, scalability and digital transformation solutions. Our fields of expertise include cloud migration projects, IT transformation, Big Data \& IoT. We translate business processes into expressive computing workflows thanks to a flexible open source core. Job parallelization and distribution allows us to accelerate business processes and reduce infrastructure costs.
+
 \subsection*{Role of ProActive in Big Data area}
+
+In this Big Data ecosystem, ActiveEon through its ProActive \cite{ProActive} open source solution fits into two main areas.
+
+ProActive has proven records in algorithm optimization through distribution and parallelization which makes it suitable for long and complex analysis. By managing closely the diversity of resources available for a company and by understanding algorithm dependencies and requirements, businesses are getting insights into their data faster, at a cheaper cost while keeping control of the execution. R and Python which are the most common languages used to extract deeper information from the data are supported by the solution. 
+
+ProActive has also been used as a meta-scheduler and orchestrator for complex architecture which have to balance security rules, fast processing, access of information, governance, and need to interact with third party software. Moreover, the open source approach followed by ActiveEon could be seen in the flexibility offered by the solution which enables easy integration with existing IT architectures.
+
 
 \subsection*{Advantages of using ProActive}
 
