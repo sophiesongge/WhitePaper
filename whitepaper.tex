@@ -330,6 +330,14 @@ An architectural view of YARN is shown in Fig.~\ref{fig:YARN}.
 
 
 \subsection*{Parallel data warehouse}
+Pivotal Greenplum Database is an Open Source parallel database. It is used for fast parallel data loading or unloading and fast internal data transfer of operations such as CTAS (Create Table as Select). It is a MPP (Massively Parallel Processing) database built on PostgreSQL (which is an open souce object oriented database). Green plum supports ACID principles of transaction management for concurrent data access and modification. 
+
+The system of Greenplum consists of a master node, standby master node, and segement nodes.  The master nodes are used to store the catalog information. And all of the data are stored on the segments nodes. One or more segments can be run on the segment nodes, which is modified PostgreSQL database instances and are assigned a content identifier. For each table, the data is divided among the segment nodes based on the distribution column keys sepcified by the user in the DDL statement. For each segment content identifier, there are a primary segment and a mirror segment, and they are not run on the same physical host.  The master node is used to parse, optimize and dispatch the SQL queries to all of the segments. The segments are used to execute the query plan and either return the requested data or insert the result of the query into a table of the database.
+
+The segment nodes support both Bulk loading and unload. It can read and write data from external of the Greenplum cluster such as ETL nodes, flat files or HDFS. 
+
+
+
 
 \subsection*{ETL for Big Data}
 As a reminder, ETL objective is to ease the process of moving and transforming data. It is split into three functions: data extraction from one or multiple sources, data transformation (cleaning, sorting, standardizing, aggregating, etc.), data loading in targeted systems following the right format. These process are used regularly so that the targeted systems are up to date and analysis can be performed. However, with the growth of data produced by businesses, data latency, the mix of data movement and transformation, these systems become companies’ bottleneck.
