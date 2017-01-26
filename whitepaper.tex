@@ -116,9 +116,9 @@ In this environment flooded with data, or as it is called Big Data, the systems 
 Consequently Big Data processing represents diverse challenges at different time of the data journey. The data will go through a first set of analysis primarily focusing on real time information, a second set of application will then store, clean and sort the data. Finally, advanced algorithms will extract deeper and more valuable analysis. To organize all of these analysis and optimize parallelization, an orchestrator or meta-scheduler is required.
 
 
-\subsection*{Challenges of Big Data processing}\label{sec: challenges}
+%\subsection*{Challenges of Big Data processing}\label{sec: challenges}
 
-\subsection*{Real-time processing for data streams}
+%\subsection*{Real-time processing for data streams}
  
 
 \section*{\color{DarkOrange}Parallel Data Processing}
@@ -178,7 +178,7 @@ Task parallelism and data parallelism complement each other, and they are often 
 
 \subsection*{Big Data processing systems}
 
-\textbf{MapReduce} is a flexible and scalable parallel and distributed programming paradigm which is specially designed for data-intensive processing. It was initially introduced  by Google \cite{Dean:2004:MSD:1251254.1251264} and popularized by the Hadoop framework. 
+\textbf{MapReduce} is a flexible and scalable parallel and distributed programming paradigm which is specially designed for data-intensive processing. It was initially introduced  by Google \cite{MapReduce} and popularized by the Hadoop framework. 
 
 The concept of MapReduce has been widely known since 1995 with the message passing Interface (MPI) \cite{MPI} standard, having \emph{reduce}  and \emph{scatter} operations. %\footnote{\url{http://mpitutorial.com/tutorials/mpi-reduce-and-allreduce/}} 
  %\footnote{\url{http://mpitutorial.com/tutorials/performing-parallel-rank-with-mpi/}}.
@@ -238,58 +238,11 @@ The previous introduction on Hadoop shows that a Hadoop MapReduce job has some s
 Hadoop is now a very mature system, with specific application and user groups. However, due to the limitation of the MapReduce paradigm and the Hadoop implementation, it has performance limitations in some application scenarios. In order to better integrate Hadoop in the applications, 
 many works have been done from the very beginning to extend Hadoop and to improve its performance. We discuss a limited number of them.
 
-The whole system of Hadoop works in a master-slave manner, with JobTracker as the master, and the other nodes as slaves. A TaskTracker daemon runs on each slave node. The JobTracker daemon is responsible for resource allocation (e.g. managing the worker nodes), tracking (e.g. resource consumption or resource availability) and management (e.g. scheduling). The TaskTracker has much more simple responsibilities. It is in charge of launching tasks with an order decided by the JobTracker, and sending the task status information back to JobTracker periodically. The schematic of this process is shown in Fig. 2.3.
-When running a Hadoop job, input data will first be divided into some splits (64M by default). Then each split will be processed by a user-defined map task.
-So the whole process of a Hadoop job as shown in Fig. 2.4 can be summarized as follow:
-
-\begin{itemize}
-
-\item \textbf{Step 1:} Split data into blocks (64M by default)
-
-\item \textbf{Step 2:} Map Phase: Extract information from data (filter, sort)
-
-\item \textbf{Step 3:} Shuffle Phase: Exchange data through network from Map Phase to Reduce Phase
-
-\item \textbf{Step 3:} Reduce Phase: Summary operation (count, aggregation)
-
-\end{itemize}
-
-The previous introduction on Hadoop shows that a Hadoop MapReduce job has some
-special characteristics as shown below,
-
-\begin{itemize}
-
-\item \textbf{Execution Similarity:} According to the programming model, users only have to provide a map function and a reduce function. And the execution for each Map task (or Reduce task) is very similar to others. In other words, all data will be processed by these functions repeatedly. Thanks to this design, we only need to study how each < key,value > pairs are processed for a particular job, as reading, sorting, transferring and writing data are independent of these two functions.
-
-\item \textbf{Data Similarity:} MapReduce is well suited for off-line batches processing. And it is usually used to do repeated work in which the input data has very similar format, such as log analysis, inverted index and so on. We can just take a look at a small sample and then we can estimate the whole dataset.
-
-
-\end{itemize}
-
-
-Hadoop is now a very mature system, with specific application and user groups. However, due to the limitation of the MapReduce paradigm and the Hadoop implementation, it has performance limitations in some application scenarios. In order to better integrate Hadoop in the applications, many works have been done from the very beginning to extend Hadoop and to improve its performance, mainly through the following three ways:
-
-\begin{itemize}
-
-\item Improve the performance of Hadoop by predicting its performance and tuning the parameters.
-
-\item Extend Hadoop to have database-like operations.
-
-\item Combine with other programming language or model.
-
-\end{itemize}
 
 \textbf{Apache Spark} \cite{2} is another popular parallel computing framework after Hadoop MapReduce. Spark provides an application programming interface in Java, Scala, Python and R on a data structure called the resilient distributed dataset (RDD). Spark also uses the MapReduce paradigm but it overcomes the limitations in MapReduce. Hadoop MapReduce forces a particular linear data flow, it reads input data from disk, maps a function across the data, reduces the results of the map, and stores reduction results on disk. The resilient distributed dataset structure works as a working set for distributed programs, it offers a restricted form of distributed shared memory. Unlike Hadoop jobs, the intermediate data of Spark can be saved in memory, which avoids the unnecessary reading and writing from HDFS. Therefore Spark is better for data mining and machine learning algorithms, which require iterations. RDD facilitates the implementation of iterative algorithms which need to visit the dataset multiple times in a loop. It also makes it easy to do interactive or exploratory data analysis, like repeated database-style querying of data.
 Spark requires a manager which is in charge of the cluster, and a distributed file system. Spark also supports a pseudo distributed mode (local mode), which is usually needed for testing.
 
 Compared with Hadoop, Spark has the following advantages:
-
-\begin{figure}
-  \centering
-    \includegraphics[width=0.5\textwidth]{images/spark.png}
-    \caption{Structure of Spark System.}
-    \label{fig:Spark}   
-\end{figure}
 
 \begin{itemize}
 
@@ -300,6 +253,13 @@ Compared with Hadoop, Spark has the following advantages:
 \item By providing a wealth of Scala, Java, Python APIs and interactive Shell API, Spark has a higher availability with different programming languages and different modes to use.
 
 \end{itemize}
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.4\textwidth]{images/spark.png}
+    \caption{Structure of Spark System.}
+    \label{fig:Spark}   
+\end{figure}
 
 According to the characteristics of Spark, its applicable scenarios are:
 
@@ -330,7 +290,7 @@ An architectural view of YARN is shown in Fig.~\ref{fig:YARN}.
 
 
 \subsection*{Parallel data warehouse}
-Pivotal Greenplum Database is an Open Source parallel database. It is used for fast parallel data loading or unloading and fast internal data transfer of operations such as CTAS (Create Table as Select). It is a MPP (Massively Parallel Processing) database built on PostgreSQL (which is an open souce object oriented database). Green plum supports ACID principles of transaction management for concurrent data access and modification. 
+Pivotal Greenplum Database \cite{Greenplum} is an Open Source parallel database. It is used for fast parallel data loading or unloading and fast internal data transfer of operations such as CTAS (Create Table as Select). It is a MPP (Massively Parallel Processing) database built on PostgreSQL (which is an open souce object oriented database). Green plum supports ACID principles of transaction management for concurrent data access and modification. 
 
 The system of Greenplum consists of a master node, standby master node, and segement nodes.  The master nodes are used to store the catalog information. And all of the data are stored on the segments nodes. One or more segments can be run on the segment nodes, which is modified PostgreSQL database instances and are assigned a content identifier. For each table, the data is divided among the segment nodes based on the distribution column keys sepcified by the user in the DDL statement. For each segment content identifier, there are a primary segment and a mirror segment, and they are not run on the same physical host.  The master node is used to parse, optimize and dispatch the SQL queries to all of the segments. The segments are used to execute the query plan and either return the requested data or insert the result of the query into a table of the database.
 
@@ -451,11 +411,11 @@ Among all the parallel frameworks, \textbf{Spark Streaming}, \textbf{Yahoo! S4} 
 We will introduce them separately.
 
  
- \textbf{Spark Streaming} is an extension of the Spark framework. It enables scalable, high-throughput and fault-tolerant stream processing for dynamic data streams. Spark Streaming receives input data streams and divides them into batches, which will later be processed by the Spark engine to generate final stream in batches. It has APIs for Scala, Java and Python. Spark Streaming is a data parallelism framework. It follows the same ideas as MapReduce batch processing paradigm. It is not a real ``real-time processing" framework: the incoming events are cached and processed as a batch, resulting in a larger delay than the real streaming processing frameworks such as Twitter Storm.
+ \textbf{Spark Streaming} \cite{Spark_Streaming} is an extension of the Spark framework. It enables scalable, high-throughput and fault-tolerant stream processing for dynamic data streams. Spark Streaming receives input data streams and divides them into batches, which will later be processed by the Spark engine to generate final stream in batches. It has APIs for Scala, Java and Python. Spark Streaming is a data parallelism framework. It follows the same ideas as MapReduce batch processing paradigm. It is not a real ``real-time processing" framework: the incoming events are cached and processed as a batch, resulting in a larger delay than the real streaming processing frameworks such as Twitter Storm.
 
-\textbf{Yahoo! S4}  is a general-purpose, distributed, scalable, partially faut-tolerant, pluggable platform for data stream processing that allows users to easily develop applications for processing continuous unbounded streams of data. It is a java based solution which relies on the user defined classes to process and produce stream data. It uses Apache Zookeeper \cite{Zookeeper} to maintain the state of a distributed job. It allows a parallel execution of data streams. But it does not provide a dynamic load balancing protocol, which is left for users to define. S4 uses "Plain Old Java Objects" (POJO) mode as its communication protocol and User Datagram Protocol (UDP) as its underlying protocol, which has an impact on reliability. Besides, it does not support dynamic deployment of the cluster or add or delete nodes during run time.
+\textbf{Yahoo! S4} \cite{S4}  is a general-purpose, distributed, scalable, partially faut-tolerant, pluggable platform for data stream processing that allows users to easily develop applications for processing continuous unbounded streams of data. It is a java based solution which relies on the user defined classes to process and produce stream data. It uses Apache Zookeeper \cite{Zookeeper} to maintain the state of a distributed job. It allows a parallel execution of data streams. But it does not provide a dynamic load balancing protocol, which is left for users to define. S4 uses "Plain Old Java Objects" (POJO) mode as its communication protocol and User Datagram Protocol (UDP) as its underlying protocol, which has an impact on reliability. Besides, it does not support dynamic deployment of the cluster or add or delete nodes during run time.
 
- \textbf{Twitter Storm} \cite{Toshniwal:2014:STO:2588555.2595641}, is a distributed, parallel and fault tolerance framework for data streams processing. Queries can be expressed in using the boxes and arrows model. A Storm job, which is called a Topology, consists in two components: Spout and Bolt . Spout nodes are responsible for generating the system input streams. Bolt nodes are in charge of processing those streams and generate output results. It relies on Zookeeper servers to maintain the state of distributed setups. Storm supports task parallelism. In a Storm cluster, the data is flowing while the tasks do not. Storm is a real "flow processing" framework: every incoming data will be handled as an event, which has a smaller delay than the mini-batch processing frameworks such as Spark Streaming. It also supports dynamic deployment of the cluster, and add or delete nodes during run time.
+ \textbf{Twitter Storm} \cite{4}, is a distributed, parallel and fault tolerance framework for data streams processing. Queries can be expressed in using the boxes and arrows model. A Storm job, which is called a Topology, consists in two components: Spout and Bolt . Spout nodes are responsible for generating the system input streams. Bolt nodes are in charge of processing those streams and generate output results. It relies on Zookeeper servers to maintain the state of distributed setups. Storm supports task parallelism. In a Storm cluster, the data is flowing while the tasks do not. Storm is a real "flow processing" framework: every incoming data will be handled as an event, which has a smaller delay than the mini-batch processing frameworks such as Spark Streaming. It also supports dynamic deployment of the cluster, and add or delete nodes during run time.
  
  Table.~\ref{tab:compare} shows a comparison of these three frameworks.
 
